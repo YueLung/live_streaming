@@ -1,0 +1,23 @@
+<p>live-host works!</p>
+
+<!-- <button nz-button nzType="primary" (click)="disconnect()">結束直播</button> -->
+
+<!-- <button nz-button nzType="primary" (click)="getRtpCapabilities()">getRtpCapabilities</button>
+
+<button nz-button nzType="primary" (click)="createDevice()">createDevice</button>
+
+<button nz-button nzType="primary" (click)="createSendTransport()">createSendTransport</button>
+
+<button nz-button nzType="primary" (click)="connectSendTransport()">connectSendTransport</button>
+
+<button nz-button nzType="primary" (click)="createRecvTransport()">createRecvTransport</button>
+
+<button nz-button nzType="primary" (click)="connectRecvTransport()">connectRecvTransport</button> -->
+
+<video #localVideo width="200" height="200" autoplay controls></video>
+<span style="margin-left: 10px;"></span>
+<video #remoteVideo width="200" height="200" autoplay controls></video>
+<div></div>
+<button nz-button nzType="primary" (click)="startLiveStream()">開始直播</button>
+<span style="margin-left: 150px;"></span>
+<button nz-button nzType="primary" (click)="startLiveStream()">開始收看直播</button>

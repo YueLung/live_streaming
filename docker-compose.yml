@@ -1,0 +1,37 @@
+# docker-compose.yml
+version: '3'
+
+services:
+  # Frontend
+  mediasoupFrontend:
+    image: ylz1995/entertainment_frontend:latest
+    ports:
+      - "80:80"
+
+    privileged: true
+    networks:
+      cloud_conference:
+        ipv4_address: 172.88.0.2
+
+  # mediasoup-worker
+  mediasoup:
+    image: ylz1995/entertainment_media_server:latest
+    # network_mode: "host"
+    ports:
+      - '3000:3000'
+      - '30000-30100:30000-30100/udp'
+      - '30000-30100:30000-30100/tcp'
+    networks:
+      cloud_conference:
+        ipv4_address: 172.88.0.3
+    # environment:
+    #   DB_UPSTREAM: http://${DOCKER_GATEWAY_HOST:-host.docker.internal}:3000
+
+networks:
+  cloud_conference:
+    ipam:
+      config:
+        - subnet: 172.88.0.0/16
+      # gateway: 172.88.0.1
+
+      # docker compose up -d
