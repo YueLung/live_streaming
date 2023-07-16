@@ -1,4 +1,4 @@
-<p>live-customer works!</p>
-<video #remoteVideo width="200" height="200" autoplay controls></video>
-
-<button nz-button nzType="primary" (click)="startLiveStream()">開始收看直播</button>
+<div class="flex-container flex-column-dir height-100">
+  <video #remoteVideo width="600" height="400" autoplay controls></video>
+  <com-chat style="flex-grow: 1;" [messageList]="messageList" (sendMessage)="sendMessage($event)"></com-chat>
+</div>

@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NiuniuHostPage } from './niuniu-host/niuniu-host.page';
+import { TestHostPage } from './test-host/test-host.page';
 
 const routes: Routes = [
-  { path: '001', component: NiuniuHostPage }
+  { path: '', redirectTo: 'test', pathMatch: 'full' },
+  { path: 'test', component: TestHostPage }
 ];
 
 @NgModule({

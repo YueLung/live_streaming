@@ -1,0 +1,8 @@
+<div class="flex-container flex-column-dir height-100">
+  <p>test-customer Page</p>
+  <div class="flex-container margin-bottom" style="width: 400px;">
+    <input nz-input placeholder="Room name" [(ngModel)]="roomName" />
+    <button nz-button class="margin-left" nzType="primary" (click)="isWatching=true">開始收看直播</button>
+  </div>
+  <com-live-customer style="flex-grow: 1;" [roomName]="roomName" [isWatching]="isWatching"></com-live-customer>
+</div>

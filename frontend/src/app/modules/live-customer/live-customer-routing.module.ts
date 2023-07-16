@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NiuniuCustomerPage } from './niuniu-customer/niuniu-customer.page';
+import { TestCustomerPage } from './test-customer/test-customer.page';
 
 const routes: Routes = [
-  { path: '001', component: NiuniuCustomerPage }
+  { path: '', redirectTo: 'test', pathMatch: 'full' },
+  { path: 'test', component: TestCustomerPage }
 ];
 
 @NgModule({

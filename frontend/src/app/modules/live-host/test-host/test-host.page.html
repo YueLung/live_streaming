@@ -1,0 +1,8 @@
+<div class="flex-container flex-column-dir height-100">
+  <p>test-host Page</p>
+  <div class="flex-container margin-bottom" style="width: 400px;">
+    <input nz-input placeholder="Room name" [(ngModel)]="roomName" />
+    <button nz-button class="margin-left" nzType="primary" (click)="isHosting=true">開始直播</button>
+  </div>
+  <com-live-host style="flex-grow: 1;" [roomName]="roomName" [isHosting]="isHosting"></com-live-host>
+</div>

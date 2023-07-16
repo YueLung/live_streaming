@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { environment } from 'src/environments/environment.development';
 import { Socket, io } from 'socket.io-client';
 import * as mediasoupClient from "mediasoup-client";
@@ -14,7 +14,19 @@ import { Transport } from 'mediasoup-client/lib/types';
 export class LiveCustomerComponent implements OnInit {
   @ViewChild('remoteVideo') remoteVideo?: ElementRef;
 
+  _roomName?: string;
+  @Input() set roomName(value: string) {
+    this._roomName = value;
+  }
+
+  @Input() set isWatching(value: boolean) {
+    if (!this._roomName) return;
+    if (value) this.startLiveStream();
+  }
+
   socket?: Socket;
+
+  messageList: Array<string> = [];
 
   device?: mediasoupClient.Device;
   rtpCapabilities?: RtpCapabilities;
@@ -22,26 +34,28 @@ export class LiveCustomerComponent implements OnInit {
   consumer?: Consumer;
 
   ngOnInit(): void {
-    this.socket = io(environment.server_url);
+    this.socket = io(`${environment.server_url}/mediasoup`);
+
+    this.socket?.on('message', message => {
+      this.messageList.push(message);
+    });
+
+    this.socket?.on('producerclose', () => {
+      this.remoteVideo!.nativeElement.srcObject = null;
+    });
+  }
+
+  sendMessage(message: string) {
+    this.socket?.emit('message', message);
   }
 
   startLiveStream() {
-    this.getRtpCapabilities();
-  }
-
-  getRtpCapabilities() {
-    // make a request to the server for Router RTP Capabilities
-    // see server's socket.on('getRtpCapabilities', ...)
-    // the server sends back data object which contains rtpCapabilities
-    this.socket?.emit('getRtpCapabilities', (data: any) => {
-      console.log(`Router RTP Capabilities... ${data}`)
-
+    this.socket?.emit('joinRoom', { roomName: this._roomName, isProducer: false }, (data: any) => {
       // we assign to local variable and will be used when
       // loading the client Device (see createDevice above)
       this.rtpCapabilities = data.rtpCapabilities;
-
       this.createDevice();
-    })
+    });
   }
 
   async createDevice() {
@@ -50,13 +64,9 @@ export class LiveCustomerComponent implements OnInit {
 
       // https://mediasoup.org/documentation/v3/mediasoup-client/api/#device-load
       // Loads the device with RTP capabilities of the Router (server side)
-      await this.device.load({
-        // see getRtpCapabilities() below
-        routerRtpCapabilities: this.rtpCapabilities!
-      })
+      await this.device.load({ routerRtpCapabilities: this.rtpCapabilities! });
 
       console.log('RTP Capabilities', this.device.rtpCapabilities);
-
       this.createRecvTransport();
 
     } catch (error: any) {
@@ -69,14 +79,13 @@ export class LiveCustomerComponent implements OnInit {
   async createRecvTransport() {
     // see server's socket.on('consume', sender?, ...)
     // this is a call from Consumer, so sender = false
-    await this.socket?.emit('createWebRtcTransport', { sender: false }, ({ params }: any) => {
+    await this.socket?.emit('createWebRtcTransport', { isProducer: false }, ({ params }: any) => {
       // The server sends back params needed
       // to create Send Transport on the client side
       if (params.error) {
         console.log(params.error)
         return
       }
-
       console.log('createWebRtcTransport =>', params)
 
       // creates a new WebRTC Transport to receive media
@@ -87,7 +96,6 @@ export class LiveCustomerComponent implements OnInit {
       }
       catch (error: any) {
         console.log('createRecvTransport error =>', error);
-
       }
       console.log('this.consumerTransport -> ', this.consumerTransport);
 
@@ -120,8 +128,7 @@ export class LiveCustomerComponent implements OnInit {
     // for consumer, we need to tell the server first
     // to create a consumer based on the rtpCapabilities and consume
     // if the router can consume, it will send back a set of params as below
-    await this.socket?.emit('consume',
-      { rtpCapabilities: this.device?.rtpCapabilities },
+    await this.socket?.emit('consume', { rtpCapabilities: this.device?.rtpCapabilities },
       async ({ params }: any) => {
         if (params.error) {
           console.log('Cannot Consume')
@@ -140,9 +147,7 @@ export class LiveCustomerComponent implements OnInit {
 
         // destructure and retrieve the video track from the producer
         const track = this.consumer?.track;
-        this.remoteVideo!.nativeElement.srcObject = new MediaStream([track!]);;
-        // this.remoteVideo!.nativeElement.muted = true;
-        console.log(this.remoteVideo!.nativeElement.srcObject);
+        this.remoteVideo!.nativeElement.srcObject = new MediaStream([track!]);
 
         // the server consumer started with media paused
         // so we need to inform the server to resume
@@ -153,4 +158,5 @@ export class LiveCustomerComponent implements OnInit {
   disconnect() {
     this.socket?.disconnect();
   }
+
 }

@@ -1,0 +1,17 @@
+<div class="flex-container flex-column-dir height-100" style="width: 600px;">
+  <nz-card style="flex-grow: 1;">
+    <nz-list nzSize="small">
+      <nz-list-item *ngFor="let message of messageList">
+        {{ message }}
+      </nz-list-item>
+    </nz-list>
+  </nz-card>
+  <nz-card class="input-card">
+    <div class="flex-container">
+      <input nz-input placeholder="請輸入訊息" [(ngModel)]="message" (keyup.enter)="onSendMessage()" />
+      <button nz-button nzType="primary" (click)="onSendMessage()">
+        <span nz-icon nzType="send" nzTheme="outline"></span>
+      </button>
+    </div>
+  </nz-card>
+</div>

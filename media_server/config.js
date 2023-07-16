@@ -1,6 +1,8 @@
 require('dotenv').config();
 
 module.exports = {
+  port: process.env.PORT,
+  cors: process.env.CORS,
   // mediasoup WorkerSettings.
   // See https://mediasoup.org/documentation/v3/mediasoup/api/#WorkerSettings
   workerSettings:
