@@ -4,11 +4,11 @@
 Angular + nodejs + mediasoup
 
 # start frontend
-
+```
 cd frontend
 npm install
 ng serve
-
+```
 # start server
 
 ```
@@ -22,5 +22,7 @@ media_server/cert
 add your cert cert.pem、csr.pem、key.pem
 ```
 
+```
 npm install
 yarn start
+```
